@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        function test() {
+            let sum = 0;
+            for (let i = 0; i <= 2000000000; i++) {
+                sum += i;
+            }
+            return sum;
+        }
+        let nativeTest
+        fetch('./build/optimized.wat').then( response => response.arrayBuffer() )
+        .then(WebAssembly.instantiate)
+        .then(({ instance }) => {
+            const { exports } = instance || {}
+            nativeTest = function () {
+                let curDate = new Date()
+                const value = exports.test()
+                display(curDate, value, new Date(), 'wasm')
+            }
+        })
+        const scriptTest = function () {
+            let curDate = new Date()
+            const value = test()
+            display(curDate, value, new Date(), 'script')
+        }
+
+        const display = function (oldTime, value, newTime, tag) {
+            const newDiv = document.createElement('div')
+            newDiv.innerText = `${tag} : ${newTime - oldTime}ms : ${value}`
+            document.getElementById('testArea').append(newDiv)
+        }
+    </script>
+</head>
+
+<body>
+    <button onclick="nativeTest()">nativeTest</button>
+    <button onclick="scriptTest()">scriptTest</button>
+    <div id="testArea"></div>
+</body>
+
+</html>
