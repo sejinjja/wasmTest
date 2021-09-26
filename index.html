@@ -15,7 +15,7 @@
             return sum;
         }
         let nativeTest
-        fetch('./build/optimized.wat').then( response => response.arrayBuffer() )
+        fetch('./build/optimized.wasm').then( response => response.arrayBuffer() )
         .then(WebAssembly.instantiate)
         .then(({ instance }) => {
             const { exports } = instance || {}
